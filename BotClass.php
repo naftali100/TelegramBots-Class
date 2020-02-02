@@ -8,11 +8,11 @@
  * 
  * Mail: Yehuda.telegram@gmail.com
  * 
- * Link: https://yehudae.ga
+ * Link: https://yehudae.net
  * 
  * Telegram: @YehudaEisenberg
  * 
- * GitHub: https://github.com/YehudaEi
+ * GitHub: https://github.com/PHP-Telegram-Bot
  *
  * License: MIT - אסור לעשות שימוש ציבורי, חובה להשאיר קרדיט ליוצר
  * 
@@ -30,14 +30,25 @@
  * require_once("BotClass.php");
  * 
 ***********************************************/
-// used by error heandlig function
-define("ME", <your-telegram-id>);
+
 header('Content-Type: text/html; charset=utf-8');
 date_default_timezone_set('Asia/Jerusalem');
+// used to save sqlite data file
 if(!defined('DATA_PATH'))
     define('DATA_PATH', '/var/telegram-bots/BotsDATA/');
+
+// used by error heandlig function
 if(!defined('WEBMASTER_TG_ID'))
     define('WEBMASTER_TG_ID', '560402434');
+
+// Debug mode
+if(!BOT['debug'])
+    error_reporting(0);
+
+
+$bot = new Bot(BOT['token'], BOT['debug']);
+
+// Update
 
 $update = json_decode(file_get_contents('php://input'), true); 
 if(($update == NULL || !defined('BOT')) && !defined('SEND_MESSAGE')){
@@ -45,123 +56,107 @@ if(($update == NULL || !defined('BOT')) && !defined('SEND_MESSAGE')){
     include '403.html';
     die();
 }
-
-
-if(!BOT['debug'])
-    error_reporting(0);
-
-global $bot;
-$bot = new Bot(BOT['token'], BOT['debug']);
-
-
-$up_type = array_keys($update)[1];
+$updateType = array_keys($update)[1];
 
 // the callback update contain the message update 
-if(isset($update['callback_query'])){
+if($updateType == 'callback_query'){
     // the clicker data
     $callFromId = $update["callback_query"]['from']['id'];
     $callId = $update["callback_query"]["id"];
     $callData = $update["callback_query"]["data"];
 
-    // update the update to $update[up_type]{update body}
+    // update the update to $update[updateType]{update body}
     $update['callback_query'] = $update['callback_query']['message'];
 }else{
     $data = null;
 }
 
 // global vars for all kinds of updates
-$userName = $update[$up_type]["chat"]["username"]                   ?? null;
-$chatId = $update[$up_type]["chat"]["id"]                           ?? null;
-$FirstName = $update[$up_type]["chat"]["first_name"]            	?? null;
-$LastName = $update[$up_type]["chat"]["last_name"]              	?? null;
+$userName = $update[$updateType]["chat"]["username"]                        ?? null;
+$chatId = $update[$updateType]["chat"]["id"]                                ?? null;
+$FirstName = $update[$updateType]["chat"]["first_name"]            	        ?? null;
+$LastName = $update[$updateType]["chat"]["last_name"]              	        ?? null;
 
-$fromId = $update[$up_type]["from"]["id"]                			?? null;
-$fromUserName = $update[$up_type]["from"]["username"]               ?? null;
-$fromFirstName = $update[$up_type]["from"]["first_name"]            ?? null;
-$fromLastName = $update[$up_type]["from"]["last_name"]              ?? null;
+$fromId = $update[$updateType]["from"]["id"]                		        ?? null;
+$fromUserName = $update[$updateType]["from"]["username"]                    ?? null;
+$fromFirstName = $update[$updateType]["from"]["first_name"]                 ?? null;
+$fromLastName = $update[$updateType]["from"]["last_name"]                   ?? null;
 
-// $cid = $update[$up_type]["chat"]["id"]                           ?? null;
-$chatType = $update[$up_type]["chat"]["type"]                       ?? null;
-$message = $update[$up_type]["text"] ?? $update[$up_type]['caption']?? null;
-$messageId = $update[$up_type]['message_id']                        ?? null;
-$title = $update[$up_type]["chat"]["title"]                         ?? null;
+$chatType = $update[$updateType]["chat"]["type"]                            ?? null;
+$message = $update[$updateType]["text"] ?? $update[$updateType]['caption']  ?? null;
+$messageId = $update[$updateType]['message_id']                             ?? null;
+$title = $update[$updateType]["chat"]["title"]                              ?? null;
 
-$cap = $update[$up_type]['caption']                                 ?? null;
+$cap = $update[$updateType]['caption']                                      ?? null;
 
 // forward
-$forwrdId = $update[$up_type]['forward_from']['id']                 ?? null;
-$forwrdFN = $update[$up_type]['forward_from']['first_name']         ?? null;
-$forwrdLN = $update[$up_type]['forward_from']['last_name']          ?? null;
-$forwrdUN = $update[$up_type]['forward_from']['username']           ?? null;
-
-$fwdFrom = $update[$up_type]['forward_from_chat']['id']             ?? null;
-
+$forwrdId = $update[$updateType]['forward_from']['id']                      ?? null;
+$forwrdFN = $update[$updateType]['forward_from']['first_name']              ?? null;
+$forwrdLN = $update[$updateType]['forward_from']['last_name']               ?? null;
+$forwrdUN = $update[$updateType]['forward_from']['username']                ?? null;
+$fwdFrom = $update[$updateType]['forward_from_chat']['id']                  ?? null;
 
 // replay
-$rtmid = $update[$up_type]['reply_to_message']['message_id']        ?? null;
-$rtmt = $update[$up_type]['reply_to_message']['text']               ?? null;
+$rtmid = $update[$updateType]['reply_to_message']['message_id']             ?? null;
+$rtmt = $update[$updateType]['reply_to_message']['text']                    ?? null;
 
 //Inline
-$inlineQ = $update["inline_query"]["query"]                          ?? null;
-$InlineQId = $update["inline_query"]["id"]                           ?? null;
-$fromId = $update["inline_query"]["from"]["id"]						 ?? null;
+$inlineQ = $update["inline_query"]["query"]                                 ?? null;
+$InlineQId = $update["inline_query"]["id"]                                  ?? null;
+$fromId = $update["inline_query"]["from"]["id"]						        ?? null;
 
-$ent = $update[$up_type]['entities']                                ?? null;
+$ent = $update[$updateType]['entities']                                     ?? null;
 
-$buttons = $update[$up_type]["reply_markup"]["inline_keyboard"]     ?? null;
+$buttons = $update[$updateType]["reply_markup"]["inline_keyboard"]          ?? null;
 
 // general data for all kind of files
 // there is also varibals for any kind below, you can use them both or delete one of them
 $general_file = null;
 $fileTypes = ['photo', 'video', 'document', 'audio', 'sticker', 'voice', 'video_note'];
 foreach($fileTypes as $type){
-    if(isset($update[$up_type][$type])){
+    if(isset($update[$updateType][$type])){
         if($type == "photo"){
-            $general_file = $update[$up_type]['photo'][count($update[$up_type][$type])-1];
+            $general_file = $update[$updateType]['photo'][count($update[$updateType][$type])-1];
         }else
-            $general_file = $update[$up_type][$type];
-		// you cat also define mime type, not complate yet.(not to all files there is mime type, you cat get it by download the file and use build-in function or use the get_download_info method of madelineProto)
-        // if(isset($general_file['mime_type'])){
-        //     $general_file['ext'] = ".".str_replace($type."/", "", $general_file['mime_type']);
-        // }
+            $general_file = $update[$updateType][$type];
     }
 }
 
 // Individual variables
 
 //photo
-$tphoto = $update[$up_type]['photo']                                ?? null;
+$tphoto = $update[$updateType]['photo']                                ?? null;
 if(!empty($tphoto))
-    $phid = $update[$up_type]['photo'][count($tphoto)-1]['file_id'] ?? null;
+    $phid = $update[$updateType]['photo'][count($tphoto)-1]['file_id'] ?? null;
 //audio
-$auid = $update[$up_type]['audio']['file_id']                       ?? null;
-$duration = $update[$up_type]['audio']['duration']                  ?? null;
-$autitle = $update[$up_type]['audio']['title']                      ?? null;
-$performer = $update[$up_type]['audio']['performer']                ?? null;
+$auid = $update[$updateType]['audio']['file_id']                       ?? null;
+$duration = $update[$updateType]['audio']['duration']                  ?? null;
+$autitle = $update[$updateType]['audio']['title']                      ?? null;
+$performer = $update[$updateType]['audio']['performer']                ?? null;
 //document
-$did = $update[$up_type]['document']['file_id']                     ?? null;
-$dfn = $update[$up_type]['document']['file_name']                   ?? null;
+$did = $update[$updateType]['document']['file_id']                     ?? null;
+$dfn = $update[$updateType]['document']['file_name']                   ?? null;
 //video
-$vidid = $update[$up_type]['video']['file_id']                      ?? null;
+$vidid = $update[$updateType]['video']['file_id']                      ?? null;
 //voice 
-$void = $update[$up_type]['voice']['file_id']                       ?? null;
+$void = $update[$updateType]['voice']['file_id']                       ?? null;
 //video_note
-$vnid = $update[$up_type]['video_note']['file_id']                  ?? null;
+$vnid = $update[$updateType]['video_note']['file_id']                  ?? null;
 //contact
-$conph = $update[$up_type]['contact']['phone_number']               ?? null;
-$conf = $update[$up_type]['contact']['first_name']                  ?? null;
-$conl = $update[$up_type]['contact']['last_name']                   ?? null;
-$conid = $update[$up_type]['contact']['user_id']                    ?? null;
+$conph = $update[$updateType]['contact']['phone_number']               ?? null;
+$conf = $update[$updateType]['contact']['first_name']                  ?? null;
+$conl = $update[$updateType]['contact']['last_name']                   ?? null;
+$conid = $update[$updateType]['contact']['user_id']                    ?? null;
 //location
-$locid1 = $update[$up_type]['location']['latitude']                 ?? null;
-$locid2 = $update[$up_type]['location']['longitude']                ?? null;
+$locid1 = $update[$updateType]['location']['latitude']                 ?? null;
+$locid2 = $update[$updateType]['location']['longitude']                ?? null;
 //Sticker
-$stid = $update[$up_type]['sticker']['file_id']                     ?? null;
+$stid = $update[$updateType]['sticker']['file_id']                     ?? null;
 //Venue
-$venLoc1 = $update[$up_type]['venue']['location']['latitude']       ?? null;
-$venLoc2 = $update[$up_type]['venue']['location']['longitude']      ?? null;
-$venTit = $update[$up_type]['venue']['title']                       ?? null;
-$venAdd = $update[$up_type]['venue']['address']                     ?? null;
+$venLoc1 = $update[$updateType]['venue']['location']['latitude']       ?? null;
+$venLoc2 = $update[$updateType]['venue']['location']['longitude']      ?? null;
+$venTit = $update[$updateType]['venue']['title']                       ?? null;
+$venAdd = $update[$updateType]['venue']['address']                     ?? null;
 
 
 // if thete ent in text its revers it to markdown and add `/```/*/_ to text
@@ -170,31 +165,19 @@ if($ent != null){
     $i = 0;
     $realtext = $message;
     foreach($ent as $e){
-        switch($e['type']){
-            case "code":
-                $replacment = "`";
-            break;
-            case "pre":
-                $replacment = "```";
-            break;
-            case "bold":
-                $replacment = "*";
-            break;
-            case "italic":
-                $replacment = "_";
-            break;
-            default:
-                continue 2;
-        }
-        $realtext = ent_replace($realtext, $replacment, $e['offset'], $e['length'], $i);
+        if($e['type'] == "code")
+            $replacment = "`";
+        if($e['type'] == "pre")
+            $replacment = "```";
+        if($e['type'] == "bold")
+            $replacment = "*";
+        if($e['type'] == "italic")
+            $replacment = "_";
+        
+        $realtext = $bot->entToRealTxt($realtext, $replacment, $e['offset'], $e['length'], $i);
         $i += strlen($replacment)*2;
     }
 }
-function ent_replace($text, $replace, $offset, $length, $delay){
-    $text = substr_replace($text, $replace, $offset+$delay, 0);
-    return substr_replace($text, $replace, $offset+$length+strlen($replace)+$delay, 0);
-}
-
 
 if(isset($chatType) && isset($chatId))
     $bot->SaveID($chatId, $chatType);
@@ -224,12 +207,6 @@ class Bot{
             $this->BotName = $botInfo['result']['first_name'];
             $this->BotUserName = $botInfo['result']['username'];
             $this->DBName = DATA_PATH.$botInfo['result']['id']." - ".$this->BotUserName.'.sqlite';
-            
-            //$old_db_name = DATA_PATH.$this->BotUserName.'.sqlite';
-            //if(isset($old_db_name)){
-            //    copy($old_db_name, $this->DBName);
-            //    unlink($old_db_name);
-            //}
                 
             //Update WebHook
             $res = $this->Request("getwebhookinfo");
@@ -317,16 +294,7 @@ class Bot{
     public function GetDBName(){
         return $this->DBName;
     }
-    public function getFullBotInfo($token){
-        $botInfo = json_decode(file_get_contents("https://api.telegram.org/bot".$token."/getMe"), true);
-        $botWebhookInfo = json_decode(file_get_contents("https://api.telegram.org/bot".$token."/getWebHookInfo"), true);
-        if($botInfo['ok'] == true){
-            $botInfo['result']['webHookInfo'] = $botWebhookInfo['result'];
-            return $botInfo['result'];
-        }
-        return false; 
-    }
-    //SendRequest
+        //SendRequest
     private function Request($method, $data =[] ==null){
         $BaseUrl = "https://api.telegram.org/bot".$this->BotToken."/".$method;
     	
@@ -341,19 +309,30 @@ class Bot{
                 $this->logging(curl_error($ch), "Curl: ".$method, false, false, $data);
     		curl_close($ch);
         }else{
-			
             curl_close($ch);
             $res = json_decode($res, true);
-			// you can send to your self the error details
-			//if(!$res['ok']){
-            //    $this->error_heandler($res);
-            //}
+
             if($this->Debug)
                 $this->logging($res, "Curl: ".$method, true, true, $data);
             return $res;
+
+            // in TODO
+            // you can send to your self the error details
+			//if(!$res['ok']){
+            //    $this->error_heandler($res);
+            //}
         }
     }
-    
+    public function getFullBotInfo(){
+        $botInfo = $this->Request("getMe");
+        $botWebhookInfo = $this->Request("getWebHookInfo");
+        if($botInfo['ok'] == true){
+            $botInfo['result']['webHookInfo'] = $botWebhookInfo;
+            return $botInfo;
+        }
+        return false; 
+    }
+
     //Logging
     public function logging($data, $method = null, $success = false, $array = false, $helpArgs = null){
         $tmp = ($this->beautifi ? JSON_PRETTY_PRINT : null ) | JSON_UNESCAPED_UNICODE;
@@ -582,26 +561,28 @@ class Bot{
         $data["switch_pm_parameter"] = $switchPmParameter;
         return $this->Request("answerInlineQuery", $data);
     }
+
 	// Helpers
 	
 	// parepare the text to avoid send errors
 	public function text_adjust($text){
-        $type = gettype($text);
-        if($type == "array")
-            $text = json_encode($text,TRUE | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-        elseif($type == "NULL")
-            $text = "text is NULL";
+        $text = var_export($text, true);
 
-        if(strlen($text) > 4048)
-            $text = "message is too long. https://del.dog/".json_decode(($this->post("https://del.dog/documents", $text), true)["key"];
+        if(mb_strlen($text) > 4500){
+            $delDog = $this->postRequest("https://del.dog/documents", $text);
+            $delDogKey = json_decode($delDog, true)["key"];
+            $text = "message is too long. https://del.dog/".$delDogKey;
+        }
         elseif($text == '')
             $text = "message empty";
 
-        if($this->ParseMode == "markdown" && preg_match_all('/(@|[^\(]http)\S+_\S*/', $text, $m) != 0){
+        // markdown errors ...
+        if($this->GetParseMode() == "markdown" && preg_match_all('/(@|[^\(]http)\S+_\S*/', $text, $m) != 0){
             foreach($m[0] as $username){
                 $text = str_replace($username, str_replace('_', "\_", $username), $text);
             }
         }
+
         return $text;
     }
 	
@@ -609,43 +590,84 @@ class Bot{
 	// argument is [ [button=>data, button2=>data ], /*row 2*/[button=>data, button2=>data ] ]
 	// by defult the button type is callback_data, you can also set button to url button by [ [text_button => [ "url" => link], "callback button"=>"data" ] ]
 	public function keyboard($data){
-        $r = []; 
-        $c = [];
+        $r = array(); 
+        $c = array();
         foreach($data as $row){
             foreach($row as $key => $value){
                 if(gettype($value) == "array"){
                     $k = key($value);
-                    array_push($c, ['text'=>$key, $k => $value[$k]]);
-                }else
-                    array_push($c, ['text'=>$key,'callback_data'=>"$value"]);
+                    $c[] = array(
+                        'text' => $key, 
+                        $k => $value[$k]
+                    );
+                }
+                else
+                    $c[] = array(
+                        'text' => $key, 
+                        'callback_data' => $value
+                    );
             }
-            array_push($r, $c);
-            $c = [];
+
+            $r[] = $c;
+            $c = array();
         }
+
         return json_encode(array('inline_keyboard' => $r)); 
     }
-	// if you too laze to open logs to chack what happend you can send to your self the errors
+
+	// if text to long this is help function that make the post request to del.dog
+    function postRequest($url, $data = array()){
+        $ch = curl_init();
+    	curl_setopt($ch, CURLOPT_URL, $url);
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    	curl_setopt($ch ,CURLOPT_POSTFIELDS, $data);
+       
+        $res = curl_exec($ch);
+        if(curl_error($ch)){
+            if($this->Debug)
+                $this->logging(curl_error($ch), "Curl: ".$url, false, false, $data);
+            curl_close($ch);
+
+            return false;
+        }else{
+            curl_close($ch);
+
+            if($this->Debug)
+                $this->logging($res, "Curl: ".$url, true, false, $data);
+            return $res;
+        }
+    }
+
+    /*
+    TODO 
+
+    // if you too laze to open logs to chack what happend you can send to your self the errors
 	// uncomment the call to this function in Request function
-	public function error_handler($respons){
+	public static function error_handler($respons){
+        if($this == null){
+            global $bot;
+            $this = $bot;
+        }
+
         $this->SetParseMode();
+        
         if($respons['error_code'] == 429){
-            $this->sendMessage(ME, "flood, wait ".$respons['parameters']['retry_after']. " seconds");
+            $this->sendMessage(WEBMASTER_TG_ID, "flood, wait ".$respons['parameters']['retry_after']. " seconds");
             die();
-            //sleep($respons['parameters']['retry_after']);
-        }elseif(strpos($respons['description'], "can't parse entities") !== 0){
-           // file_put_contents("text.txt", debug_backtrace()[2]["args"][1]);
-           // $this->sendDocument(ME, new CURLFile("text.txt"));
-           // unlink("text.txt");
-            // $this->sendMessage(ME, $respons['description']);
-        }elseif($respons['error_code'] == 403){
-            $this->sendMessage(ME, "forrbiden ".debug_backtrace()[2]["args"][0]);
+        }
+
+        elseif(strpos($respons['description'], "can't parse entities") !== 0){
+            
+        }
+        elseif($respons['error_code'] == 403){
+            $this->sendMessage(WEBMASTER_TG_ID, "forrbiden ".debug_backtrace()[2]["args"][0]);
         }
         foreach (debug_backtrace() as $key => $value) {
             if($key == 0)
                 continue;
             if($value['function'] == "error_heandler"){
-                $this->sendMessage(ME, "loop error");
-                $this->sendMessage(ME, $respons['description']);
+                $this->sendMessage(WEBMASTER_TG_ID, "loop error");
+                $this->sendMessage(WEBMASTER_TG_ID, $respons['description']);
                 //throw new Exception("error loop/n", 1);
                 die();
             }
@@ -656,42 +678,32 @@ class Bot{
         $respons["_"] = "error output";
         $respons['update'] = $update;
 
-        $this->sendMessage(ME, $respons);
+        $this->sendMessage(WEBMASTER_TG_ID, $respons);
         return $respons;
     }
-	// if text to long this is help function that make the post request to del.dog
-    function post($url, $postVars = array()){
+    */
 
-        if(gettype($postVars) == "array"){
-            $postVars = http_build_query($postVars);
-        }
-        $options = array(
-            'http' =>
-                array(
-                    'method'  => 'POST', 
-                    'header'  => 'Content-type: application/x-www-form-urlencoded',
-                    'content' => $postVars
-                )
-        );
-        $streamContext  = stream_context_create($options);
-        
-        $result = file_get_contents($url, false, $streamContext);
-        
-        if($result === false){
-            $error = error_get_last();
-            //throw new Exception('POST request failed: ' . $error['message']);
-        }
-        return $result;
+
+    public static function entToRealTxt($text, $replace, $offset, $length, $delay){
+        $text = substr_replace($text, $replace, $offset + $delay, 0);
+        return substr_replace($text, $replace, $offset + $length + strlen($replace) + $delay, 0);
     }
 }
+
 /*
-uncomment this function to get the php errors in telegram
-set_exception_handler("error_handler");
-function error_handler($e){
-    global $bot;
-    $r["file"] = $e->getFile();
-    $r["error"] = $e->getMessage();
-    $r["line"] = $e->getLine();
-    $bot->sendMessage(ME, $r);
-}
+    uncomment this function to get the php errors in telegram
+    
+    // in TODO
+    //set_exception_handler(array('Bot', 'error_handler'));
+    
+    or 
+    
+    set_exception_handler('error_handler');
+    function error_handler($e){
+        global $bot;
+        $r["file"] = $e->getFile();
+        $r["error"] = $e->getMessage();
+        $r["line"] = $e->getLine();
+        $bot->sendMessage(WEBMASTER_TG_ID, $r);
+    }
 */
