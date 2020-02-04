@@ -16,7 +16,7 @@ define('BOT', array(
     "debug" => false
     ));
 
-require_once("BotClass.php");
+require_once("src/autoload.php");
 ```
 
 Contact in telegram: [@YehudaEisenbergBot](http://t.me/YehudaEisenbergBot "@YehudaEisenbergBot")
