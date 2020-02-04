@@ -1,6 +1,6 @@
 <?php
 
-if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'בan\'t run alone');
+if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'can\'t run alone');
 
 class Helpers{
     private static $Bot;
@@ -51,26 +51,26 @@ class Helpers{
 	// argument is array(array( 'text' => 'data', 'text2' => 'data2'), /*row 2*/ array( 'text3' => 'data3', 'text4' => 'data4') )
 	// by defult the button type is callback_data, you can also set button to url button by array(array( 'text_button' => array('url' => 'link'), 'callback button' => 'data'))
     public static function makeKeyboard($data){
-        $r = array(); 
-        $c = array();
+        $keyCol = array(); 
+        $keyRow = array();
         foreach($data as $row){
             foreach($row as $key => $value){
                 if(gettype($value) == "array"){
                     $k = key($value);
-                    $carray() = array(
+                    $keyCol[] = array(
                         'text' => $key, 
-                        $k => $valuearray($k)
+                        $k => $value[$k]
                     );
                 }
                 else
-                    $carray() = array(
+                    $keyCol[] = array(
                         'text' => $key, 
                         'callback_data' => $value
                     );
             }
 
-            $rarray() = $c;
-            $c = array();
+            $keyRow() = $keyCol;
+            $keyCol = array();
         }
 
         return json_encode(array('inline_keyboard' => $r)); 
@@ -158,7 +158,6 @@ class Helpers{
                 $respons['update'] = $update;
 
             $this->Bot->sendMessage(WEBMASTER_TG_ID, $respons);
-            return $respons;
         }
     }
 }
