@@ -69,7 +69,7 @@ class Helpers{
                     );
             }
 
-            $keyRow() = $keyCol;
+            $keyRow[] = $keyCol;
             $keyCol = array();
         }
 
