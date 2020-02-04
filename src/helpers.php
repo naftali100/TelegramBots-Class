@@ -73,14 +73,14 @@ class Helpers{
             $keyCol = array();
         }
 
-        return json_encode(array('inline_keyboard' => $r)); 
+        return json_encode(array('inline_keyboard' => $keyRow)); 
     }
 
     // parepare the text to avoid send errors
     public static function text_adjust($text){
         $text = var_export($text, true);
 
-        if(mb_strlen($text) > 4500){
+        if(mb_strlen($text) > 4090){
             $delDog = $this->postRequest("https://del.dog/documents", $text);
             $delDogKey = json_decode($delDog, true)["key"];
             $text = "message is too long. https://del.dog/".$delDogKey;
