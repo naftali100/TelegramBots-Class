@@ -16,20 +16,21 @@ foreach($files as $file){
         throw new Exception ($file.' not found');
 }
 
+/*
+
 // uncomment this function to get the php errors in telegram
 set_exception_handler(array('Helpers', 'error_handler'));
 
-/*
-    or: 
+or: 
 
-    set_exception_handler('error_handler');
-    function error_handler($e){
-        global $bot;
-        $r["file"] = $e->getFile();
-        $r["error"] = $e->getMessage();
-        $r["line"] = $e->getLine();
-        $bot->sendMessage(WEBMASTER_TG_ID, $r);
-    }
+set_exception_handler('error_handler');
+function error_handler($e){
+    global $bot;
+    $r["file"] = $e->getFile();
+    $r["error"] = $e->getMessage();
+    $r["line"] = $e->getLine();
+    $bot->sendMessage(WEBMASTER_TG_ID, $r);
+}
 */
 
 

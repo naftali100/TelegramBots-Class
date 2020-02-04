@@ -1,6 +1,6 @@
 <?php
 
-if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'בan\'t run alone');
+if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'can\'t run alone');
 
 $updateType = array_keys($update)[1];
 

@@ -1,6 +1,6 @@
 <?php
 
-if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'בan\'t run alone');
+if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'can\'t run alone');
 
 header('Content-Type: text/html; charset=utf-8');
 date_default_timezone_set('Asia/Jerusalem');
