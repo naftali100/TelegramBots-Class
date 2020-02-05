@@ -5,19 +5,19 @@ if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'can\'t run 
 class Helpers{
     private static $Bot;
 
-    public static function Helpers($Bot = null){
+    public function Helpers($Bot = null){
         if($Bot != null)
-            $this->Bot = $Bot;
+            static::$Bot = $Bot;
         else{
             global $bot;
             if(gettype($bot) == "Bot")
-                $this->Bot = $bot;
+                static::$Bot = $bot;
         }
     }
 
     public static function SetBot($Bot){
         if($Bot != null)
-            $this->Bot = $Bot;
+            static::$Bot = $Bot;
     }
 
     public static function entToRealTxt($text, $replace, $offset, $length, $delay){
@@ -33,16 +33,16 @@ class Helpers{
        
         $res = curl_exec($ch);
         if(curl_error($ch)){
-            if(gettype($this->Bot) == "Bot" && $Bot->GetDebug())
-                $this->Bot->logging(curl_error($ch), "Curl: ".$url, false, false, $data);
+            if(gettype(static::$Bot) == "Bot" && static::$Bot->GetDebug())
+                static::$Bot->logging(curl_error($ch), "Curl: ".$url, false, false, $data);
             curl_close($ch);
 
             return false;
         }else{
             curl_close($ch);
 
-            if(gettype($this->Bot) == "Bot" && $Bot->GetDebug())
-                $this->Bot->logging($res, "Curl: ".$url, true, false, $data);
+            if(gettype(static::$Bot) == "Bot" && static::$Bot->GetDebug())
+                static::$Bot->logging($res, "Curl: ".$url, true, false, $data);
             return $res;
         }
     }
@@ -90,11 +90,11 @@ class Helpers{
             $text = "message empty";
 
         // parse_mode errors ...
-        if(gettype($this->Bot) == "Bot"){
-            if($this->Bot->GetParseMode() == "markdown"){
+        if(gettype(static::$Bot) == "Bot"){
+            if(static::$Bot->GetParseMode() == "markdown"){
                 $text = str_replace('_', "\_", $text);
             }
-            elseif($this->Bot->GetParseMode() == "html"){
+            elseif(static::$Bot->GetParseMode() == "html"){
                 $text = str_replace('<', "&lt;", $text);
                 $text = str_replace('>', "&gt;", $text);
             }
@@ -119,18 +119,18 @@ class Helpers{
     // if you too laze to open logs to chack what happend you can send to your self the errors
 	// uncomment the call to this function in Request function
     public static function error_handler($respons, $TGapi = false){
-        if(gettype($this->Bot) != "Bot"){
+        if(gettype(static::$Bot) != "Bot"){
             global $bot;
-            $this->Bot = $bot;
+            static::$Bot = $bot;
         }
-        if(gettype($this->Bot) != "Bot")
+        if(gettype(static::$Bot) != "Bot")
             return;
 
         if($TGapi){
-            $this->Bot->SetParseMode();
+            static::$Bot->SetParseMode();
             
             if($respons['error_code'] == 429){
-                $this->Bot->sendMessage(WEBMASTER_TG_ID, "flood, wait ".$respons['parameters']['retry_after']. " seconds");
+                static::$Bot->sendMessage(WEBMASTER_TG_ID, "flood, wait ".$respons['parameters']['retry_after']. " seconds");
                 die();
             }
 
@@ -138,14 +138,14 @@ class Helpers{
                 
             }
             elseif($respons['error_code'] == 403){
-                $this->Bot->sendMessage(WEBMASTER_TG_ID, "forrbiden ".debug_backtrace()[2]["args"][0]);
+                static::$Bot->sendMessage(WEBMASTER_TG_ID, "forrbiden ".debug_backtrace()[2]["args"][0]);
             }
             foreach (debug_backtrace() as $key => $value) {
                 if($key == 0)
                     continue;
                 if($value['function'] == "error_heandler"){
-                    $this->Bot->sendMessage(WEBMASTER_TG_ID, "loop error");
-                    $this->Bot->sendMessage(WEBMASTER_TG_ID, $respons['description']);
+                    static::$Bot->sendMessage(WEBMASTER_TG_ID, "loop error");
+                    static::$Bot->sendMessage(WEBMASTER_TG_ID, $respons['description']);
                     die();
                 }
             }
@@ -158,7 +158,7 @@ class Helpers{
             if(!empty($update))
                 $respons['update'] = $update;
 
-            $this->Bot->sendMessage(WEBMASTER_TG_ID, $respons);
+            static::$Bot->sendMessage(WEBMASTER_TG_ID, $respons);
         }
     }
 }

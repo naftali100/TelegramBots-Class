@@ -1,6 +1,6 @@
 <?php
 
-define('BOT_CLASS');
+define('BOT_CLASS', 1);
 
 $files = array(
     "init.php", 
