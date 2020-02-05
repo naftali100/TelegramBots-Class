@@ -78,7 +78,6 @@ class Helpers{
 
     // parepare the text to avoid send errors
     public static function text_adjust($text){
-	if(gettype($text) != "string")
         	$text = var_export($text, true);
 
         if(mb_strlen($text) > 4090){
