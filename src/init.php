@@ -10,7 +10,7 @@ if(!defined('DATA_PATH'))
 
 // used by error heandlig function
 if(!defined('WEBMASTER_TG_ID'))
-    define('WEBMASTER_TG_ID', '560402434');
+    define('WEBMASTER_TG_ID', '<YOUR_TELEGRAM_ID>');
 
 // Debug mode
 if(!BOT['debug'])

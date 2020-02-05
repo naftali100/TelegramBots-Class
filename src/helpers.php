@@ -1,23 +1,23 @@
 <?php
 
-if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.'can\'t run alone');
+if(!defined('BOT_CLASS')) throw new Exception ('the file '.__FILE__.' can\'t run alone');
 
 class Helpers{
     private static $Bot;
 
-    public static function Helpers($Bot = null){
+    public function Helpers($Bot = null){
         if($Bot != null)
-            $this->Bot = $Bot;
+            self::$Bot = $Bot;
         else{
             global $bot;
-            if(gettype($bot) == "Bot")
-                $this->Bot = $bot;
+            if(gettype($bot) == "object")
+                self::$Bot = $bot;
         }
     }
 
     public static function SetBot($Bot){
         if($Bot != null)
-            $this->Bot = $Bot;
+            self::$Bot = $Bot;
     }
 
     public static function entToRealTxt($text, $replace, $offset, $length, $delay){
@@ -33,16 +33,16 @@ class Helpers{
        
         $res = curl_exec($ch);
         if(curl_error($ch)){
-            if(gettype($this->Bot) == "Bot" && $Bot->GetDebug())
-                $this->Bot->logging(curl_error($ch), "Curl: ".$url, false, false, $data);
+            if(gettype(self::$Bot) == "object" && self::$Bot->GetDebug())
+                self::$Bot->logging(curl_error($ch), "Curl: ".$url, false, false, $data);
             curl_close($ch);
 
             return false;
         }else{
             curl_close($ch);
 
-            if(gettype($this->Bot) == "Bot" && $Bot->GetDebug())
-                $this->Bot->logging($res, "Curl: ".$url, true, false, $data);
+            if(gettype(self::$Bot) == "object" && self::$Bot->GetDebug())
+                self::$Bot->logging($res, "Curl: ".$url, true, false, $data);
             return $res;
         }
     }
@@ -78,10 +78,11 @@ class Helpers{
 
     // parepare the text to avoid send errors
     public static function text_adjust($text){
+        if(gettype($text) != "string")
         	$text = var_export($text, true);
 
         if(mb_strlen($text) > 4090){
-            $delDog = $this->postRequest("https://del.dog/documents", $text);
+            $delDog = self::postRequest("https://del.dog/documents", $text);
             $delDogKey = json_decode($delDog, true)["key"];
             $text = "message is too long. https://del.dog/".$delDogKey;
         }
@@ -89,11 +90,11 @@ class Helpers{
             $text = "message empty";
 
         // parse_mode errors ...
-        if(gettype($this->Bot) == "Bot"){
-            if($this->Bot->GetParseMode() == "markdown"){
+        if(gettype(self::$Bot) == "object"){
+            if(self::$Bot->GetParseMode() == "markdown"){
                 $text = str_replace('_', "\_", $text);
             }
-            elseif($this->Bot->GetParseMode() == "html"){
+            elseif(self::$Bot->GetParseMode() == "html"){
                 $text = str_replace('<', "&lt;", $text);
                 $text = str_replace('>', "&gt;", $text);
             }
@@ -105,8 +106,8 @@ class Helpers{
     public static function getFullBotInfo($token = ""){
         $baseUrl = "https://api.telegram.org/bot{$token}/";
 
-        $botInfo = $this->postRequest($baseUrl."getMe", null);
-        $botWebhookInfo = $this->postRequest($baseUrl."getWebHookInfo", null);
+        $botInfo = json_decode(self::postRequest($baseUrl."getMe", null), true);
+        $botWebhookInfo = json_decode(self::postRequest($baseUrl."getWebHookInfo", null), true);
         if($botInfo['ok'] == true){
             $botInfo['result']['webHookInfo'] = $botWebhookInfo;
             return $botInfo;
@@ -117,47 +118,70 @@ class Helpers{
     // TODO Need urgent renovation !!!
     // if you too laze to open logs to chack what happend you can send to your self the errors
 	// uncomment the call to this function in Request function
-    public static function error_handler($respons, $TGapi = false){
-        if(gettype($this->Bot) != "Bot"){
+    public static function error_handler($errorData, $TGapi = false){
+        if(gettype(self::$Bot) != "object"){
             global $bot;
-            $this->Bot = $bot;
+            self::$Bot = $bot;
         }
-        if(gettype($this->Bot) != "Bot")
+        if(gettype(self::$Bot) != "object")
             return;
 
-        if($TGapi){
-            $this->Bot->SetParseMode();
+        if($TGapi === true){
+            self::$Bot->SetParseMode("");
             
-            if($respons['error_code'] == 429){
-                $this->Bot->sendMessage(WEBMASTER_TG_ID, "flood, wait ".$respons['parameters']['retry_after']. " seconds");
-                die();
-            }
-
-            elseif(strpos($respons['description'], "can't parse entities") !== 0){
-                
-            }
-            elseif($respons['error_code'] == 403){
-                $this->Bot->sendMessage(WEBMASTER_TG_ID, "forrbiden ".debug_backtrace()[2]["args"][0]);
-            }
             foreach (debug_backtrace() as $key => $value) {
-                if($key == 0)
-                    continue;
-                if($value['function'] == "error_heandler"){
-                    $this->Bot->sendMessage(WEBMASTER_TG_ID, "loop error");
-                    $this->Bot->sendMessage(WEBMASTER_TG_ID, $respons['description']);
+                if($key == 0) continue;
+                else if($value['function'] == "error_handler"){
+                    self::$Bot->sendMessage(WEBMASTER_TG_ID, "loop error");
+                    self::$Bot->sendMessage(WEBMASTER_TG_ID, $errorData['description']);
                     die();
                 }
             }
 
+            $res["calledByFunc"] = debug_backtrace()[2]['function'];
+            $res["fileLocation"] = debug_backtrace()[2]['file'];
+            $res["lineInFile"] = debug_backtrace()[2]['line'];
+            $res["errorType"] = "Telegram api output error";
+
+            $res['telegramRespons'] = $errorData;
+
             global $update;
-            $respons["call_by"] = debug_backtrace()[2]['function'];
-            $respons["from_line"] = debug_backtrace()[2]['line'];
-            $respons["error_type"] = "error output";
-
             if(!empty($update))
-                $respons['update'] = $update;
-
-            $this->Bot->sendMessage(WEBMASTER_TG_ID, $respons);
+                $res['telegramUpdate'] = $update;
+            
+            if(gettype(self::$Bot) == "object" && self::$Bot->GetDebug())
+                self::$Bot->logging($res, "errorHandler: ", false, true);
+            
+            self::$Bot->sendMessage(WEBMASTER_TG_ID, $res);
         }
+        else{
+            $r["message"] = "You have a exception in you bot code:";
+            $r["file"] = $errorData->getFile();
+            $r["error"] = $errorData->getMessage();
+            $r["line"] = $errorData->getLine();
+            self::$Bot->sendMessage(WEBMASTER_TG_ID, $r);
+        }
+    }
+    public static function error_handler_php($ErrorId, $ErrorMes, $ErrorFile, $ErrorLine, $ErrorFatherFiles){
+        // Original - https://gist.github.com/YehudaEi/c0ae248fae39020ab4aabc1047984902
+        
+        if(gettype(self::$Bot) != "object"){
+            global $bot;
+            self::$Bot = $bot;
+        }
+        if(gettype(self::$Bot) != "object")
+            return;
+        
+        $data = array();
+        $data["message"] = "You have a error in you bot code:";
+        $data['errorType'] = "phpError";
+        $data['errorCode'] = $ErrorId;
+        $data['errorMes'] = $ErrorMes;
+        $data['errorFile'] = $ErrorFile;
+        $data['errorLineInFile'] = $ErrorLine;
+        $data['fatherFiles'] = $ErrorFatherFiles;
+        
+        self::$Bot->sendMessage(WEBMASTER_TG_ID, $data);
+        return NULL;
     }
 }

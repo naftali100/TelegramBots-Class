@@ -118,7 +118,7 @@ class Bot{
         return $this->DBName;
     }
         //SendRequest
-    private function Request($method, $data =[] ==null){
+    private function Request($method, $data = array()){
         $BaseUrl = "https://api.telegram.org/bot".$this->BotToken."/".$method;
     	
         $ch = curl_init();
@@ -135,15 +135,14 @@ class Bot{
             curl_close($ch);
             $res = json_decode($res, true);
 
+            // you can send to your self the error details
+			if(!$res['ok'] && $this->Debug){
+                Helpers::error_handler($res, true);
+            }
+
             if($this->Debug)
                 $this->logging($res, "Curl: ".$method, true, true, $data);
             return $res;
-
-            // in TODO
-            // you can send to your self the error details
-			if(!$res['ok']){
-                Helpers::error_handler($res);
-            }
         }
     }
 
