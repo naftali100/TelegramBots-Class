@@ -2,11 +2,13 @@
 
 define('BOT_CLASS', 1);
 
+$dir = dirname(__FILE__);
+
 $files = array(
-    "init.php", 
-    "helpers.php", 
-    "update.php", 
-    "BotClass.php"
+    $dir."/init.php", 
+    $dir."/helpers.php", 
+    $dir."/update.php", 
+    $dir."/BotClass.php"
 );
 
 foreach($files as $file){
