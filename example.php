@@ -8,7 +8,6 @@
  *  
 *******************************************/
 
-<<<<<<< Updated upstream
 define('BOT', array(
     "token" => "<TOKEN>",
     "webHookUrl" => "https://telegram.org/returnJson_MYBOT.php",
@@ -46,24 +45,3 @@ elseif(isset($InlineQId)){
 }
 else
     $bot->sendMessage($chatId,"```\n".json_encode($update, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)."```", null, $messageId);
-=======
-require_once('src/AutoLoader.php');
-
-use YehudaEi\TelegramBots;
-
-$config = new Config();
-$config->token = "<TOKEN>";
-$config->username = "<USERNAME>";
-$config->webhookUrl = "<WEBHOOK_URL>";
-$config->logging = true;
-$config->parseMode = "html";
-
-$bot = new TelegramBots($config);
-$bot->setUpdate();
-
-$user = $bot->getUpdate()->user;
-$text = $bot->getUpdate()->message->text;
-
-$bot->sendMessage($user, $text);
-
->>>>>>> Stashed changes
