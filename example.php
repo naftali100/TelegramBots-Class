@@ -20,12 +20,18 @@ $bot->SetUpdate($update);
 $bot->SetParseMode('MarkDown');
 
 if($message == "callback"){
-    $keyboard = Helpers::makeKeyboard(array(array("callback_data is your id" => $chatId)));
-    $bot->sendMessage($chatId, "callback", $keyboard, $messageId);
+    $main_message = json_encode(array(
+      'inline_keyboard' => array(array(array('text' => 'callback_data is your id', 'callback_data' => $chatId))),
+      'one_time_keyboard' => true,'resize_keyboard' => true
+    ));
+    $bot->sendMessage($chatId, "callback", $main_message, $messageId);
 }
 elseif($message == "/start"){
-    $keyboard = Helpers::makeKeyboard(array(array('Switch to inline' => array('switch_inline_query_current_chat' => ""))));
-    $bot->sendMessage($chatId, "hello,\nSend me the text \"`callback`\" to get a message with a button.\n\nCreated by @YehudaEisenberg.", $keyboard, $messageId);
+    $main_message = json_encode(array(
+      'inline_keyboard' => array(array(array('text' => 'Switch to inline', 'switch_inline_query_current_chat' => ""))),
+      'one_time_keyboard' => true,'resize_keyboard' => true
+    ));
+    $bot->sendMessage($chatId, "hello,\nSend me the text \"`callback`\" to get a message with a button.\n\nCreated by @YehudaEisenberg.", $main_message, $messageId);
 }
 elseif(isset($InlineQId)){
     $inlineRes = array(array(

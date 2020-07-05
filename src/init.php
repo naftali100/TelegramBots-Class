@@ -13,8 +13,13 @@ if(!defined('WEBMASTER_TG_ID'))
     define('WEBMASTER_TG_ID', '<YOUR_TELEGRAM_ID>');
 
 // Debug mode
-if(!BOT['debug'])
-    error_reporting(0);
+if(isset(BOT['debug'])){
+    if(BOT['debug']){
+        set_exception_handler(array('Helpers', 'error_handler'));
+        set_error_handler(array('Helpers', 'error_handler_php'));
+    }else
+        error_reporting(0);
+}
 
 $update = json_decode(file_get_contents('php://input'), true); 
 if(($update == NULL || !defined('BOT')) && !defined('SEND_MESSAGE')){

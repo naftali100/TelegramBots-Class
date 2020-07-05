@@ -48,8 +48,8 @@ class Helpers{
     }
 
     // builde inline keyboard from array
-	// argument is array(array( 'text' => 'data', 'text2' => 'data2'), /*row 2*/ array( 'text3' => 'data3', 'text4' => 'data4') )
-	// by defult the button type is callback_data, you can also set button to url button by array(array( 'text_button' => array('url' => 'link'), 'callback button' => 'data'))
+	// argument should be: array(/*row 1*/ array( 'text' => 'data', 'text2' => 'data2'), /*row 2*/ array( 'text3' => 'data3', 'text4' => 'data4') )
+	// by defult the button type is callback_data, you can also set button to url button by: array(array( 'link button' => array('url' => 'link'), 'callback button' => 'data'))
     public static function makeKeyboard($data){
         $keyCol = array(); 
         $keyRow = array();
@@ -91,8 +91,10 @@ class Helpers{
 
         // parse_mode errors ...
         if(gettype(self::$Bot) == "object"){
-            if(self::$Bot->GetParseMode() == "markdown"){
-                $text = str_replace('_', "\_", $text);
+            if(self::$Bot->GetParseMode() == "markdown" && preg_match_all('/(@|(?<!\()http)\S+_\S*/', $text, $m) != 0){
+                foreach($m[0] as $username){
+                    $text = str_replace($username, str_replace('_', "\_", $username), $text);
+                }
             }
             elseif(self::$Bot->GetParseMode() == "html"){
                 $text = str_replace('<', "&lt;", $text);
@@ -130,7 +132,7 @@ class Helpers{
             self::$Bot->SetParseMode("");
             
             foreach (debug_backtrace() as $key => $value) {
-                if($key == 0) continue;
+                if($key < 2) continue;
                 else if($value['function'] == "error_handler"){
                     self::$Bot->sendMessage(WEBMASTER_TG_ID, "loop error");
                     self::$Bot->sendMessage(WEBMASTER_TG_ID, $errorData['description']);
