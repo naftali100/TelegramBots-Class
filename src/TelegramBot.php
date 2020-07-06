@@ -19,7 +19,7 @@ class TelegramBot{
 
     public function __construct($config){
         if (PHP_SAPI === 'cli'){
-            print "cli mode. using getUpdates method"; #TODO add async heandling
+            print "cli mode. using getUpdates method" . PHP_EOL; #TODO add async heandling
 
         }else{
             // using webhook method
@@ -88,5 +88,8 @@ class Bot{
         $data["disable_notification"] = $this->bot->config->notification;
         $data["message_id"] = $message->message_id;
         return $this->exec("forwardMessage", $data);
+    }
+    public function sendDocument($chat, $document){
+
     }
 }
