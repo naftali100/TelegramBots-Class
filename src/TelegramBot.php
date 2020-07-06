@@ -11,8 +11,33 @@
  * 
  */
 
+namespace YehudaEi\TelegramBots;
+
 use YehudaEi\TelegramBots\Exception\TelegramException;
-use YehudaEi\TelegramBots\Objects;
+use YehudaEi\TelegramBots\Objects\Parser; 
+
+class TelegramBot{
+
+    public function __construct($config){
+        if (PHP_SAPI === 'cli'){
+            print "cli mode. using getUpdates method"; #TODO add async heandling
+
+        }else{
+            // using webhook method
+
+        }
+    }
+
+    public function setUpdate($update){
+        if(gettype($update) == "string" || gettype($update) == "array"){
+            $this->update = new Parser($update);
+        }
+    }
+
+    public function getUpdate(){
+        return $this->update->updateObject;
+    }
+}
 
 
 class Bot{

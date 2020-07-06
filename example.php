@@ -8,9 +8,9 @@
  *  
 *******************************************/
 
-require_once('src/AutoLoader.php');
+namespace YehudaEi\TelegramBots;
 
-use YehudaEi\TelegramBots;
+require_once('src/AutoLoader.php');
 
 $config = new Config();
 $config->token = "<TOKEN>";
@@ -19,10 +19,11 @@ $config->webhookUrl = "<WEBHOOK_URL>";
 $config->logging = true;
 $config->parseMode = "html";
 
-$bot = new TelegramBots($config);
-$bot->setUpdate();
+$bot = new TelegramBot($config);
+$bot->setUpdate($update);
 
 $user = $bot->getUpdate()->user;
 $text = $bot->getUpdate()->message->text;
 
 $bot->sendMessage($user, $text);
+
