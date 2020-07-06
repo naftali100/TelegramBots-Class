@@ -14,7 +14,6 @@
 namespace YehudaEi\TelegramBots;
 
 use YehudaEi\TelegramBots\Exception\TelegramException;
-use YehudaEi\TelegramBots\Objects\Parser; 
 
 class TelegramBot{
 

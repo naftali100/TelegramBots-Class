@@ -17,9 +17,9 @@ class Voice extends TelegramObject{
     protected $fields =  [
         'file_id'        => "",
         'file_unique_id' => "",
-        'duration'       => null,
+        'duration'       => -1,
         'mime_type'      => "",
-        'file_size'      => null,
+        'file_size'      => -1,
     ];
 }
 

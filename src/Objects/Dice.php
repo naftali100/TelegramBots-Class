@@ -16,7 +16,7 @@ namespace YehudaEi\TelegramBots\Objects;
 class Dice extends TelegramObject{
     protected $fields =  [
         'emoji' => "",
-        'value' => null,
+        'value' => -1,
     ];
 }
 

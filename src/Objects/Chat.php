@@ -15,10 +15,12 @@ namespace YehudaEi\TelegramBots\Objects;
 
 class Chat extends TelegramObject{
     protected $fields =  [
-        'id'                  => null,
+        'id'                  => -1,
         'type'                => "",
+        'is_bot'              => false,  
         'title'               => "",
         'username'            => "",
+        'language_code'       => "",
         'first_name'          => "",
         'last_name'           => "",
         'photo'               => ChatPhoto::class,
@@ -26,7 +28,7 @@ class Chat extends TelegramObject{
         'invite_link'         => "",
         'pinned_message'      => Message::class,
         'permissions'         => ChatPermissions::class,
-        'slow_mode_delay'     => null,
+        'slow_mode_delay'     => -1,
         'sticker_set_name'    => "",
         'can_set_sticker_set' => false,  
     ];

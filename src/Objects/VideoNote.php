@@ -17,10 +17,10 @@ class VideoNote extends TelegramObject{
     protected $fields =  [
         'file_id'        => "",
         'file_unique_id' => "",
-        'length'         => null,
-        'duration'       => null,
+        'length'         => -1,
+        'duration'       => -1,
         'thumb'          => PhotoSize::class,
-        'file_size'      => null,
+        'file_size'      => -1,
     ];
 }
 

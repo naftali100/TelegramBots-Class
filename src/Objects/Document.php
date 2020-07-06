@@ -20,7 +20,7 @@ class Document extends TelegramObject{
         'thumb'          => PhotoSize::class,
         'file_name'      => "",
         'mime_type'      => "",
-        'file_size'      => null,
+        'file_size'      => -1,
     ];
 }
 

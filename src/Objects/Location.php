@@ -15,8 +15,8 @@ namespace YehudaEi\TelegramBots\Objects;
 
 class Location extends TelegramObject{
     protected $fields =  [
-        'longitude' => null,
-        'latitude'  => null
+        'longitude' => -1,
+        'latitude'  => -1
     ];
 }
 

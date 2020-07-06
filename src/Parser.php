@@ -11,8 +11,9 @@
  * 
  */
 
-namespace YehudaEi\TelegramBots\Objects;
+namespace YehudaEi\TelegramBots;
 
+use YehudaEi\TelegramBots\Objects;
 use YehudaEi\TelegramBots\Exception\TelegramException;
 
 class Parser{
@@ -22,19 +23,27 @@ class Parser{
         if(gettype($update) == "string"){
             $update = json_decode($update, true);
             if($update == null){
-                throw new TelegramException("Invalid update");
+                throw new TelegramException("Broken json update");
             }
         }
-        $this->updateObject = new Update();
-        $this->currentObj = &$this->updateObject;
-        $this->walker($update);
+
+        if(gettype($update) == "array"){
+            $this->updateObject = new Objects\Update();
+            $this->currentObj = &$this->updateObject;
+            $this->walker($update);
+        }
+        else{
+            throw new TelegramException("Update type error");
+        }
     }
 
     public function walker($arr){
-        
         foreach($arr as $subarrK => $subarrV){
             if(gettype($subarrV) == "array"){
-                $objName = __NAMESPACE__ ."\\". ucfirst($subarrK);
+                $className = $subarrK;
+                if($subarrK == "from") $className = "chat";
+
+                $objName = __NAMESPACE__ ."\\Objects\\". ucfirst($className);
                 $newObject = new $objName();
 
                 $this->currentObj->$subarrK = $newObject; // creat new sub object to update key

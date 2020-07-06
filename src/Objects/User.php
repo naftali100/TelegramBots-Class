@@ -15,7 +15,7 @@ namespace YehudaEi\TelegramBots\Objects;
 
 class User extends TelegramObject{
     protected $fields =  [
-        'id'                          => null,
+        'id'                          => -1,
         'is_bot'                      => false,
         'first_name'                  => "",
         'last_name'                   => "",

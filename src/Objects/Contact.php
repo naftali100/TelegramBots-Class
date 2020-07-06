@@ -18,7 +18,7 @@ class Contact extends TelegramObject{
         'phone_number'  => "",
         'first_name'    => "",
         'last_name'     => "",
-        'duration'      => null,
+        'duration'      => -1,
         'vcard'         => "",
     ];
 }

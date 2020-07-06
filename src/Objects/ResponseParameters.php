@@ -15,8 +15,8 @@ namespace YehudaEi\TelegramBots\Objects;
 
 class ResponseParameters extends TelegramObject{
     protected $fields =  [
-        'migrate_to_chat_id' => null,
-        'retry_after' => null,
+        'migrate_to_chat_id' => -1,
+        'retry_after' => -1,
     ];
 }
 
