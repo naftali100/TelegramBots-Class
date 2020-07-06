@@ -8,9 +8,40 @@
  *  
 *******************************************/
 
+namespace YehudaEi\TelegramBots;
+
 require_once('src/AutoLoader.php');
 
-use YehudaEi\TelegramBots;
+$update = [
+    "update_id"=> 343150141,
+    "message"=>[
+        "message_id"=> 4043,
+        "from"=>[
+            "id"=> 1007128729,
+            "is_bot"=> false,
+            "first_name"=> "Rodrigo",
+            "last_name"=> "Aoyagui",
+            "username"=> "rodaoy",
+            "language_code"=> "en"
+        ],
+        "chat"=>[
+            "id"=> 1007128729,
+            "first_name"=> "Rodrigo",
+            "last_name"=> "Aoyagui",
+            "username"=> "rodaoy",
+            "type"=> "private"
+        ],
+        "date"=> 1593719868,
+        "text"=> "/start",
+        "entities"=> [
+            [
+                "offset"=> 0,
+                "length"=> 6,
+                "type"=> "bot_command"
+            ]
+        ]
+    ]
+];
 
 $config = new Config();
 $config->token = "<TOKEN>";
@@ -19,10 +50,13 @@ $config->webhookUrl = "<WEBHOOK_URL>";
 $config->logging = true;
 $config->parseMode = "html";
 
-$bot = new TelegramBots($config);
-$bot->setUpdate();
+$bot = new TelegramBot($config);
 
-$user = $bot->getUpdate()->user;
-$text = $bot->getUpdate()->message->text;
+$bot->setUpdate($update);
 
-$bot->sendMessage($user, $text);
+print $bot->getUpdate()->update_id;
+
+var_dump($bot->getUpdate()->message);
+
+// $bot->sendMessage($user, $text);
+

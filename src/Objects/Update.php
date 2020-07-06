@@ -15,6 +15,7 @@ namespace YehudaEi\TelegramBots\Objects;
 
 class Update extends TelegramObject{
     protected $fields = [
+        'update_id'            => 0,
         'message'              => Message::class,
         'edited_message'       => Message::class,
         'channel_post'         => Message::class,
