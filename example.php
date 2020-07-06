@@ -11,37 +11,30 @@
 namespace YehudaEi\TelegramBots;
 
 require_once('src/AutoLoader.php');
+require_once('error.php');
 
-$update = [
-    "update_id"=> 343150141,
-    "message"=>[
-        "message_id"=> 4043,
-        "from"=>[
-            "id"=> 1007128729,
-            "is_bot"=> false,
-            "first_name"=> "Rodrigo",
-            "last_name"=> "Aoyagui",
-            "username"=> "rodaoy",
-            "language_code"=> "en"
-        ],
-        "chat"=>[
-            "id"=> 1007128729,
-            "first_name"=> "Rodrigo",
-            "last_name"=> "Aoyagui",
-            "username"=> "rodaoy",
-            "type"=> "private"
-        ],
-        "date"=> 1593719868,
-        "text"=> "/start",
-        "entities"=> [
-            [
-                "offset"=> 0,
-                "length"=> 6,
-                "type"=> "bot_command"
-            ]
-        ]
-    ]
-];
+// Fake update - Tests
+$update = array (
+    'update_id' => 602412044,
+    'message' => array (
+      'message_id' => 12345,
+      'from' => array (
+        'id' => 123,
+        'is_bot' => false,
+        'first_name' => 'Yehuda',
+        'last_name' => 'Eisenberg',
+        'language_code' => 'en',
+      ),
+      'chat' => array (
+        'id' => 123,
+        'first_name' => 'Yehuda',
+        'last_name' => 'Eisenberg',
+        'type' => 'private',
+      ),
+      'date' => 1594018800,
+      'text' => 'Test Message Text',
+    ),
+);
 
 $config = new Config();
 $config->token = "<TOKEN>";
@@ -54,8 +47,7 @@ $bot = new TelegramBot($config);
 
 $bot->setUpdate($update);
 
-print $bot->getUpdate()->update_id;
-
+var_dump($bot->getUpdate()->update_id);
 var_dump($bot->getUpdate()->message);
 
 // $bot->sendMessage($user, $text);

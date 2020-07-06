@@ -17,11 +17,11 @@ class Audio extends TelegramObject{
     protected $fields =  [
         'file_id'        => "",
         'file_unique_id' => "",
-        'duration'       => null,
+        'duration'       => -1,
         'performer'      => "",
         'title'          => "",
         'mime_type'      => "",
-        'file_size'      => null,
+        'file_size'      => -1,
         'thumb'          => PhotoSize::class,
     ];
 }

@@ -17,7 +17,7 @@ use YehudaEi\TelegramBots\Exception\TelegramException;
 
 class KeyboardMarkup extends TelegramObject{
     protected $fields = [
-        'keyboard' => null
+        'keyboard' => -1
     ];
 
     public function __set($fieldName, $value){

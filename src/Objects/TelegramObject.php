@@ -23,7 +23,7 @@ class TelegramObject{
             return $this->fields[$fieldName];
         }
         else{
-            throw new TelegramException("Field '$fieldName' not defined in class ". __CLASS__);
+            throw new TelegramException("Field '$fieldName' not defined in class " . __CLASS__);
         }
     }
 
@@ -32,17 +32,16 @@ class TelegramObject{
             $this->fields[$fieldName] = $value;
         }
         else{
-            print $value . "\n";
-            var_dump($this->fields);
-            throw new TelegramException("Field '$fieldName' not defined in class ". __CLASS__);
+            throw new TelegramException("Field '$fieldName' not defined in class " . __CLASS__);
         }
     }
 
     public function __toString(){
-        $res = get_class($this);
+        $res = get_class($this) . " {\n";
         foreach($this->fields as $fieldName => $value){
             $res .= "\t\"" . $fieldName . "\" => \"" . $value . "\"\n";
         }
+        $res .= "}";
         return $res;
     }
 

@@ -17,9 +17,9 @@ class PhotoSize extends TelegramObject{
     protected $fields =  [
         'file_id'        => "",
         'file_unique_id' => "",
-        'width'          => null,
-        'height'         => null,
-        'file_size'      => null,
+        'width'          => -1,
+        'height'         => -1,
+        'file_size'      => -1,
     ];
 }
 

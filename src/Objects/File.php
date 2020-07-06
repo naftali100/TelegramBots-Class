@@ -17,7 +17,7 @@ class File extends TelegramObject{
     protected $fields =  [
         'file_id'        => "",
         'file_unique_id' => "",
-        'file_size'      => null,
+        'file_size'      => -1,
         'file_path'      => ""
     ];
 }

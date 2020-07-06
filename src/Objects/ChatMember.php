@@ -18,7 +18,7 @@ class ChatMember extends TelegramObject{
         'user'                      => User::class,
         'status'                    => "",
         'custom_title'              => "",
-        'until_date'                => null,
+        'until_date'                => -1,
         'can_be_edited'             => false,
         'can_post_messages'         => false,
         'can_edit_messages'         => false,

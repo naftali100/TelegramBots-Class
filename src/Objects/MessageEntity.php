@@ -16,8 +16,8 @@ namespace YehudaEi\TelegramBots\Objects;
 class MessageEntity extends TelegramObject{
     protected $fields =  [
         'type'     => "",
-        'offset'   => null,
-        'length'   => null,
+        'offset'   => -1,
+        'length'   => -1,
         'url'      => "",
         'user'     => User::class,
         'language' => ""

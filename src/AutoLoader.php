@@ -11,15 +11,19 @@
  * 
  */
 
-spl_autoload_register(function($className) {
-	if (file_exists(dirname(__FILE__) . '/' . $className . '.php')) {
-		include dirname(__FILE__) . '/' . $className . '.php';
+spl_autoload_register(function($class) {
+    $className = basename($class);
+
+    $ds = DIRECTORY_SEPARATOR;
+
+	if (file_exists(dirname(__FILE__) . $ds . $className . '.php')) {
+		include dirname(__FILE__) . $ds . $className . '.php';
     }
-    elseif(file_exists(dirname(__FILE__) . 'Objects/' . $className . '.php')){
-        include dirname(__FILE__) . 'Objects/' . $className . '.php';
+    elseif(file_exists(dirname(__FILE__) . $ds . 'Objects' . $ds . $className . '.php')){
+        include dirname(__FILE__) . $ds . 'Objects' . $ds . $className . '.php';
     }
-    elseif(file_exists(dirname(__FILE__) . '/Exception/' . $className . '.php')){
-        include dirname(__FILE__) . '/Exception/' . $className . '.php';
+    elseif(file_exists(dirname(__FILE__) . $ds . 'Exception' . $ds . $className . '.php')){
+        include dirname(__FILE__) . $ds . 'Exception' . $ds . $className . '.php';
     }
     else{
         throw new Exception("Class '$className' does not exist");

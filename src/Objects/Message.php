@@ -15,16 +15,16 @@ namespace YehudaEi\TelegramBots\Objects;
 
 class Message extends TelegramObject{
     protected $fields = [
-        'message_id'                => null,
+        'message_id'                => -1,
         'from'                      => User::class,
-        'date'                      => null,
+        'date'                      => -1,
         'chat'                      => Chat::class,
         'forward_from'              => User::class,
         'forward_from_chat'         => Chat::class,
-        'forward_from_message_id'   => null,
+        'forward_from_message_id'   => -1,
         'forward_signature'         => "",
         'forward_sender_name'       => "",
-        'forward_date'              => null,
+        'forward_date'              => -1,
         'reply_to_message'          => Message::class,
         'media_group_id'            => "",
         'author_signature'          => "",
@@ -53,8 +53,8 @@ class Message extends TelegramObject{
         'group_chat_created'        => false,
         'supergroup_chat_created'   => false,
         'channel_chat_created'      => false,
-        'migrate_to_chat_id'        => null,
-        'migrate_from_chat_id'      => null,
+        'migrate_to_chat_id'        => -1,
+        'migrate_from_chat_id'      => -1,
         'pinned_message'            => Message::class,
         'connected_website'         => "",
         'reply_markup'              => KeyboardMarkup::class,
@@ -94,7 +94,7 @@ class Message extends TelegramObject{
         ];
 
         foreach ($types as $type) {
-            if ($this->$type !== null) {
+            if ($this->$type !== -1) {
                 return $type;
             }
         }

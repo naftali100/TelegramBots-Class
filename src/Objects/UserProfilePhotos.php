@@ -15,7 +15,7 @@ namespace YehudaEi\TelegramBots\Objects;
 
 class UserProfilePhotos extends TelegramObject{
     protected $fields =  [
-        'total_count' => null,
+        'total_count' => -1,
         'photos' => [[PhotoSize::class]]
     ];
 }

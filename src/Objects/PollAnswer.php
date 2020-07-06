@@ -17,7 +17,7 @@ class PollAnswer extends TelegramObject{
     protected $fields =  [
         'poll_id'    => "",
         'user'       => User::class,
-        'option_ids' => [null]
+        'option_ids' => [-1]
     ];
 }
 
