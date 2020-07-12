@@ -18,6 +18,12 @@ use YehudaEi\TelegramBots\Exception\TelegramException;
 class TelegramObject{
     protected $fields = [];
 
+    // public function __construct(... $values){
+    //     foreach(array_combine(array_keys($this->fields), $values) as $field => $arg){
+    //         $this->field = $arg;
+    //     }
+    // }
+
     public function __get($fieldName){
         if(isset($this->fields[$fieldName])){
             return $this->fields[$fieldName];

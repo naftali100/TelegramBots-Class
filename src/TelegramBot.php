@@ -23,6 +23,7 @@ class TelegramBot{
 
         }else{
             // using webhook method
+            $this->setUpdate(json_decode("php://input"), true);
 
         }
     }
@@ -30,6 +31,10 @@ class TelegramBot{
     public function setUpdate($update){
         if(gettype($update) == "string" || gettype($update) == "array"){
             $this->update = new Parser($update);
+        }elseif(gettype($update) == "object" && get_class($update) == "YehudaEi\TelegramBots\Objects\Update"){
+            $this->update = $update;
+        }else{
+            throw new TelegramException("Invalid update. update must be an array, json or object");
         }
     }
 
@@ -89,7 +94,21 @@ class Bot{
         $data["message_id"] = $message->message_id;
         return $this->exec("forwardMessage", $data);
     }
-    public function sendDocument($chat, $document){
-
+    public function sendDocument($chat, $document, $reply_to_message_id, $reply_markup, $caption){
+        if(get_class($chat) !== "User")
+            throw new TelegramException("\$chat must be a User");
+        elseif(get_class($document) !== "Document")
+            if(!filter_var($document, FILTER_VALIDATE_URL) && !is_link($document) && get_class($document) !== "CURLFile")
+                throw new TelegramException("\$document must be a Document or an URL or a CURLFile object"); 
+            
+        $data['chat'] = $chat;
+        if(get_class($document) == "Document")
+            $data['document'] = $document->file_id;
+        else
+            $data['document'] = $document;
+        
+           
+                
+            
     }
 }
